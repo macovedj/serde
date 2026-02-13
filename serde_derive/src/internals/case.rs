@@ -55,6 +55,9 @@ impl RenameRule {
 
     /// Apply a renaming rule to an enum variant, returning the version expected in the source.
     pub fn apply_to_variant(self, variant: &str) -> String {
+        if variant.is_empty() {
+            return String::new();
+        }
         match self {
             None | PascalCase => variant.to_owned(),
             LowerCase => variant.to_ascii_lowercase(),

@@ -112,6 +112,9 @@ impl ToTokens for private {
 
 #[proc_macro_derive(Serialize, attributes(serde))]
 pub fn derive_serialize(input: TokenStream) -> TokenStream {
+    // Uncomment to confirm this fork is the one running (build will fail with this message):
+    // panic!("SERDE_DERIVE_FORK_ENTRY");
+    eprintln!("[serde_derive] derive_serialize entered (fork empty-ident-guard)");
     let mut input = parse_macro_input!(input as DeriveInput);
     ser::expand_derive_serialize(&mut input)
         .unwrap_or_else(syn::Error::into_compile_error)
@@ -120,6 +123,9 @@ pub fn derive_serialize(input: TokenStream) -> TokenStream {
 
 #[proc_macro_derive(Deserialize, attributes(serde))]
 pub fn derive_deserialize(input: TokenStream) -> TokenStream {
+    // Uncomment to confirm this fork is the one running:
+    // panic!("SERDE_DERIVE_FORK_ENTRY");
+    eprintln!("[serde_derive] derive_deserialize entered (fork empty-ident-guard)");
     let mut input = parse_macro_input!(input as DeriveInput);
     de::expand_derive_deserialize(&mut input)
         .unwrap_or_else(syn::Error::into_compile_error)

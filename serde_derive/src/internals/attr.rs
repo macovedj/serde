@@ -131,7 +131,13 @@ impl<'c, T> VecAttr<'c, T> {
 }
 
 fn unraw(ident: &Ident) -> Ident {
-    Ident::new(ident.to_string().trim_start_matches("r#"), ident.span())
+    let s = ident.to_string().trim_start_matches("r#").to_string();
+    if s.is_empty() {
+        eprintln!("[serde_derive] unraw: empty ident at {:?}, using \"_\"", ident.span());
+        Ident::new("_", ident.span())
+    } else {
+        Ident::new(&s, ident.span())
+    }
 }
 
 #[derive(Copy, Clone)]

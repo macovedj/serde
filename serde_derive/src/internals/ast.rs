@@ -148,7 +148,11 @@ fn enum_from_ast<'a>(
                 private,
             );
             Variant {
-                ident: variant.ident.clone(),
+                ident: if variant.ident.to_string().is_empty() {
+                    Ident::new("_", variant.ident.span())
+                } else {
+                    variant.ident.clone()
+                },
                 attrs,
                 style,
                 fields,

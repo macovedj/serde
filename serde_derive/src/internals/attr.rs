@@ -132,12 +132,18 @@ impl<'c, T> VecAttr<'c, T> {
 
 fn unraw(ident: &Ident) -> Ident {
     let s = ident.to_string().trim_start_matches("r#").to_string();
+    eprintln!(
+        "[serde_derive] unraw called: len={} is_empty={} span={:?}",
+        s.len(),
+        s.is_empty(),
+        ident.span()
+    );
     if s.is_empty() {
-        eprintln!("[serde_derive] unraw: empty ident at {:?}, using \"_\"", ident.span());
-        Ident::new("_", ident.span())
-    } else {
-        Ident::new(&s, ident.span())
+        // Distinctive panic so we can confirm this path is hit under WATT (eprintln may not surface).
+        // If you see "SERDE_DERIVE_EMPTY_IDENT_UNRAW_HIT" in the panic, remove this panic and keep the fallback.
+        panic!("SERDE_DERIVE_EMPTY_IDENT_UNRAW_HIT: empty ident at {:?}", ident.span());
     }
+    Ident::new(&s, ident.span())
 }
 
 #[derive(Copy, Clone)]

@@ -5,7 +5,7 @@ use self::RenameRule::*;
 use std::fmt::{self, Debug, Display};
 
 /// The different possible ways to change case of fields in a struct, or variants in an enum.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum RenameRule {
     /// Don't apply a default rename rule.
     None,
@@ -55,6 +55,14 @@ impl RenameRule {
 
     /// Apply a renaming rule to an enum variant, returning the version expected in the source.
     pub fn apply_to_variant(self, variant: &str) -> String {
+        eprintln!("before empty guard");
+        if variant.is_empty() {
+            eprintln!(
+                "[serde_derive] apply_to_variant: empty variant, rule={:?}, returning \"\"",
+                self
+            );
+            return String::new();
+        }
         match self {
             None | PascalCase => variant.to_owned(),
             LowerCase => variant.to_ascii_lowercase(),

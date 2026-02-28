@@ -1,5 +1,5 @@
 use crate::internals::respan::respan;
-use proc_macro2::Span;
+use proc_macro2::{Ident, Span};
 use quote::ToTokens;
 use std::mem;
 use syn::{
@@ -10,8 +10,18 @@ use syn::{
 pub fn replace_receiver(input: &mut DeriveInput) {
     let self_ty = {
         let ident = &input.ident;
+        // Empty ident (e.g. under WATT/syn edge case) would panic in parse_quote when emitted.
+        let ident_for_ty: Ident = if ident.to_string().is_empty() {
+            eprintln!(
+                "[serde_derive] replace_receiver: empty container ident, span={:?}, using \"_\"",
+                ident.span()
+            );
+            Ident::new("_", ident.span())
+        } else {
+            ident.clone()
+        };
         let ty_generics = input.generics.split_for_impl().1;
-        parse_quote!(#ident #ty_generics)
+        parse_quote!(#ident_for_ty #ty_generics)
     };
     let mut visitor = ReplaceReceiver(&self_ty);
     visitor.visit_generics_mut(&mut input.generics);
